@@ -360,6 +360,13 @@ function rename_connection()
         exit 1
     fi
 
+    PID=$(get_peer_pid "$1")
+
+    if [ "$PID" != "null" ] && [ "$PID" != "0" ]; then
+        echo "Connection is active, aborting..."
+        exit 1
+    fi
+
     NAME=$(prompt_text "Rename connection" "Enter connection name" "$1" "Rename" "Cancel")
     if [ -z "$NAME" ]; then exit 1; fi
 
@@ -371,6 +378,7 @@ function rename_connection()
     # Move files
     mv "$PEER_DIR/$1" "$PEER_DIR/$NAME"
     mv "$LOG_DIR/$1.log" "$LOG_DIR/$NAME.log" 2> /dev/null
+    mv "$RUN_DIR/$1" "$RUN_DIR/$NAME" 2> /dev/null
 
     # Rename keychain
     PWD=$(get_keychain_entry "$1")
@@ -448,13 +456,15 @@ function printMenu()
         if [ "${PEER_PIDS[$I]}" != "0" ]; then
             echo "${PEER_LIST[$I]} (${PEER_TIME[$I]}) | color=green"
             echo "-- Disconnect (PID: ${PEER_PIDS[$I]}) | color=red terminal=false bash=\"$SELF_PATH\" param1=disconnect param2=\"${PEER_LIST[$I]}\" refresh=true"
+            echo "-----"
+            echo "-- Rename"
         else
             echo "${PEER_LIST[$I]}"
             echo "-- Connect | terminal=false bash=\"$SELF_PATH\" param1=connect param2=\"${PEER_LIST[$I]}\" refresh=true"
+            echo "-----"
+            echo "-- Rename | terminal=false bash=\"$SELF_PATH\" param1=rename param2=\"${PEER_LIST[$I]}\" refresh=true"
         fi
 
-        echo "-----"
-        echo "-- Rename | terminal=false bash=\"$SELF_PATH\" param1=rename param2=\"${PEER_LIST[$I]}\" refresh=true"
         echo "-- Change password | terminal=false bash=\"$SELF_PATH\" param1=change_pwd param2=\"${PEER_LIST[$I]}\" refresh=true"
         echo "-- Open log | terminal=false bash=/usr/bin/open param1=\"$LOG_DIR/${PEER_LIST[$I]}.log\""
         echo "-- Edit config | terminal=false bash=/usr/bin/open param1=-t param2=\"$PEER_DIR/${PEER_LIST[$I]}\""
