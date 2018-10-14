@@ -1,6 +1,6 @@
 # bitbar-pptp-client
 
-Simple PPPT client as the BitBar plugin.
+Simple PPTP client as the [BitBar](https://getbitbar.com) plugin.
 
 Because Apple has removed support for PPTP from MacOS Sierra and newer and there is no free alternative solution that doesn't suck so I've decided to solve my problem this way.
 
